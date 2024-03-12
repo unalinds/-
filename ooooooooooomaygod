@@ -1,0 +1,316 @@
+https://www.youtube.com/watch?v=myylvIDnbD8
+https://www.4devs.com.br/gerador_de_cnpj
+1)A tela deve ter as 4 funções de uma RUD (UPDATE,  READ e DELETE).
+2)Ao clicar na linha do datagridview deve ser carregado os dados do cliente nos campos text,combo e outros controles.
+3)Deve ser criado um campo status, onde caso o cliente esteja inativo, deve colorir no datadridview a linha em vermelho, caso esteja ativo, colorir em azul.
+4) Imagem.
+5) ativar o radio button do ativo/inativo
+
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
+using System.Data.SqlClient;
+
+namespace WindowsFormsApplication1
+{
+    public partial class Pjuridica : Form
+    {
+        public int emailJ;
+        public int cnpJ;
+        public string mensagem;
+        public string ValidateCnpj;
+        public string connetionString;
+        public bool novo;
+        public int code;
+
+        public Pjuridica()
+        {
+            InitializeComponent();
+        }
+
+        SqlConnection conn = new SqlConnection(@"Data Source=CANCUN\SQLEXPRESS;Initial Catalog=exProgramacao;Persist Security Info=True;User ID=sa;Password=zx862");
+
+        public void identify()
+        {
+            string pattern = "^([0-9a-zA-Z]([-\\.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$";
+
+            if (Regex.IsMatch(txtEmail.Text, pattern) == false)
+            {
+                if (txtEmail.Text.All(Char.IsWhiteSpace))
+                {
+                    emailJ = 1;
+                    errorProvider7.Clear();
+                }
+                else
+                {
+                    emailJ = 0;
+                    errorProvider7.SetError(this.txtEmail, "Insira outro email");
+                    return;
+                }
+            }
+        }
+
+        private void LoadData()
+        {
+            try
+            {
+                conn.Open();
+                string query = "SELECT * FROM Pjuridica";
+                SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                SDA.Fill(dt);
+
+                pjuridicaDataGridView.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao carregar dados: " + ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private void save_Click(object sender, EventArgs e)
+        {
+            string situacao="";
+            if (rbAtivoJ.Checked)
+            {
+                situacao = rbAtivoJ.Text;
+            }
+
+            if (rbInativoJ.Checked)
+            {
+                situacao = rbInativoJ.Text;
+            }
+
+
+            if (string.IsNullOrEmpty(txtName.Text.Trim()))
+            {
+                errorProvider1.SetError(txtName, "Insira um nome");
+                return;
+            }
+            else
+            {
+                errorProvider1.SetError(txtName, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(txtAddres.Text.Trim()))
+            {
+                errorProvider2.SetError(txtAddres, "Insira um endereço");
+                return;
+            }
+            else
+            {
+                errorProvider2.SetError(txtAddres, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(cbState.Text.Trim()))
+            {
+                errorProvider3.SetError(cbState, "Insira um estado");
+                return;
+            }
+            else
+            {
+                errorProvider3.SetError(cbState, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(txtCity.Text.Trim()))
+            {
+                errorProvider4.SetError(txtCity, "Insira uma cidade");
+                return;
+            }
+            else
+            {
+                errorProvider4.SetError(txtCity, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(mskCnpj.Text.Trim()))
+            {
+                errorProvider5.SetError(mskCnpj, "Insira um cnpj");
+                return;
+            }
+            else
+            {
+                errorProvider5.SetError(mskCnpj, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(mskDate.Text.Trim()))
+            {
+                errorProvider6.SetError(mskDate, "Insira uma data");
+                return;
+            }
+            else
+            {
+                errorProvider6.SetError(mskDate, string.Empty);
+            }
+
+            string valor = mskCnpj.Text;
+            if (ValidateCNPJ.ValidadateCNPJ.IsCnpj(valor))
+            {
+                cnpJ = 1; errorProvider8.Clear();
+            }
+            else
+            {
+                errorProvider8.SetError(mskCnpj, "Insira um cnpj valido");
+                return;
+            }
+
+            identify();
+
+            try
+            {
+                conn.Open();
+                string query = "INSERT INTO Pjuridica(name, addres, street, streetNumber, cep, state, cnpj, ie, cellNumber, landline, email, date, observation) VALUES('" + txtName.Text + "','" + txtAddres.Text + "','" + txtStreet.Text + "','" + txtStreetNumber.Text + "','" + mskCep.Text + "','" + cbState.Text + "','" + mskCnpj.Text + "','" + mskIe.Text + "','" + mskCellNumber.Text + "','" + mskLandline.Text + "','" + txtEmail.Text + "','" + mskDate.Text + "','" + txtObservation.Text + "')";
+                SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
+                SDA.SelectCommand.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Error" + ex);
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+
+  
+
+            MessageBox.Show(mensagem, "Registro incluído com sucesso!");
+
+            Pjuridica NewForm = new Pjuridica();
+            NewForm.Show();
+            this.Dispose(false);
+
+            panel1.Enabled = false;
+        }
+
+        private void cnpJ_CheckedChanged(object sender, EventArgs e)
+        {
+            mskCnpj.Text = "";
+            mskCnpj.Mask = "";
+            mskCnpj.MaskInputRejected += new MaskInputRejectedEventHandler(cnpj_MaskInputRejected);
+        }
+        private void cnpj_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        { }
+
+        private void clean_Click(object sender, EventArgs e)
+        {
+            Pjuridica NewForm = new Pjuridica();
+            NewForm.Show();
+            this.Dispose(false);
+        }
+
+        private void pjuridicaBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            this.Validate();
+            this.pjuridicaBindingSource.EndEdit();
+            this.tableAdapterManager.UpdateAll(this.exProgramacaoDataSet);
+        }
+
+        private void Pjuridica_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'exProgramacaoDataSet.Pjuridica' table. You can move, or remove it, as needed.
+            this.pjuridicaTableAdapter.Fill(this.exProgramacaoDataSet.Pjuridica);
+            btnReturn.Enabled = false;
+        }
+        private void Tcity_Click(object sender, EventArgs e)
+        { }
+
+        private void btnReturn_Click(object sender, EventArgs e)
+        {
+            var Main = new Main();
+            Main.Show();
+        }
+
+        public static DataTable DataSource
+        {
+            get;
+            set;
+        }
+        private void pjuridicaDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+        
+        }
+        private void btnCreat_Click(object sender, EventArgs e)
+        {
+            panel1.Enabled = true;
+            panel4.Enabled = true;
+        }
+
+        private void txtStreet_TextChanged(object sender, EventArgs e)
+        { }
+        private void txtStreetNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+                MessageBox.Show("este campo aceita somente numero");
+            }
+        }
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                conn.Open();
+                string query = "DELETE Pjuridica WHERE code = '" + code + "' ";
+                SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
+                SDA.SelectCommand.ExecuteNonQuery();
+                MessageBox.Show("Cadastro deletado com sucesso");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro" + ex);
+            }
+          finally
+            {
+                conn.Close();
+            }
+            LoadData();
+
+            Pjuridica NewForm = new Pjuridica();
+            NewForm.Show();
+            this.Dispose(false);
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        { }
+        private void txtStreetNumber_TextChanged(KeyPressEventArgs e)
+        { }
+        private void btnCreat_MouseClick(object sender, MouseEventArgs e)
+        { }
+        private void Tobservacao_Click(object sender, EventArgs e)
+        { }
+        private void TstreetNumber_Click(object sender, EventArgs e)
+        { }
+        private void landline_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        { }
+        private void email_TextChanged(object sender, EventArgs e)
+        { }
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        { }
+        private void observation_TextChanged(object sender, EventArgs e)
+        { }
+        private void ExibirDados()
+        { }
+        private void Tname_Click(object sender, EventArgs e)
+        { }
+        private void Taddres_Click(object sender, EventArgs e)
+        { }
+        private void Tstreet_Click(object sender, EventArgs e)
+        { }
+
+        private void mskCep_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        { }
+    }
+}
