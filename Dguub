@@ -1,0 +1,24 @@
+private void pjuridicaDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+{
+    if (e.RowIndex >= 0)
+    {
+        DataGridViewRow row = pjuridicaDataGridView.Rows[e.RowIndex];
+
+        // Exibindo informações da linha selecionada nos campos de entrada
+        txtName.Text = row.Cells["name"].Value.ToString();
+        txtAddres.Text = row.Cells["addres"].Value.ToString();
+        txtStreet.Text = row.Cells["street"].Value.ToString();
+        txtStreetNumber.Text = row.Cells["streetNumber"].Value.ToString();
+        mskCep.Text = row.Cells["cep"].Value.ToString();
+        cbState.Text = row.Cells["state"].Value.ToString();
+        mskCnpj.Text = row.Cells["cnpj"].Value.ToString();
+        mskIe.Text = row.Cells["ie"].Value.ToString();
+        mskCellNumber.Text = row.Cells["cellNumber"].Value.ToString();
+        mskLandline.Text = row.Cells["landline"].Value.ToString();
+        txtEmail.Text = row.Cells["email"].Value.ToString();
+        mskDate.Text = row.Cells["date"].Value.ToString();
+        txtObservation.Text = row.Cells["observation"].Value.ToString();
+
+        // Se precisar, você pode adicionar mais campos conforme necessário
+    }
+}
