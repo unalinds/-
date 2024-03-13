@@ -1,0 +1,15 @@
+private void pjuridicaDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+{
+    // Verificar se a célula clicada está dentro dos limites das células de dados
+    if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+    {
+        // Obter a linha clicada
+        DataGridViewRow row = pjuridicaDataGridView.Rows[e.RowIndex];
+
+        // Exibir as informações da linha nos campos de entrada
+        txtName.Text = row.Cells["name"].Value.ToString();
+        txtAddres.Text = row.Cells["addres"].Value.ToString();
+        txtStreet.Text = row.Cells["street"].Value.ToString();
+        // Adicione os outros campos conforme necessário
+    }
+}
