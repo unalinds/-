@@ -1,3 +1,51 @@
+public Pjuridica()
+{
+    InitializeComponent();
+    situacao = rbAtivoJ.Text; // Defina a situação padrão aqui
+    destacS(); // Chame o método destacS() para destacar as células corretamente
+}
+
+private void save_Click(object sender, EventArgs e)
+{
+    // Outro código aqui...
+
+    // Atualiza a variável situacao com base no RadioButton selecionado
+    situacao = rbAtivoJ.Checked ? rbAtivoJ.Text : rbInativoJ.Text;
+
+    // Outro código aqui...
+
+    destacS(); // Atualiza a cor de fundo das células do DataGridView
+}
+
+private void pjuridicaDataGridView_MouseDoubleClick(object sender, MouseEventArgs e)
+{
+    // Outro código aqui...
+
+    // Atualiza a variável situacao com base nos dados da célula selecionada
+    situacao = pjuridicaDataGridView.SelectedRows[0].Cells[15].Value.ToString();
+
+    destacS(); // Atualiza a cor de fundo das células do DataGridView
+}
+
+private void destacS()
+{
+    foreach (DataGridViewRow linha in pjuridicaDataGridView.Rows)
+    {
+        if (linha.Cells[15].Value.ToString() == rbAtivoJ.Text)
+        {
+            linha.Cells[0].Style.BackColor = Color.Blue;
+        }
+        else if (linha.Cells[15].Value.ToString() == rbInativoJ.Text)
+        {
+            linha.Cells[0].Style.BackColor = Color.Red;
+        }
+        else
+        { 
+            // Se necessário, lógica para outras situações
+        }
+    }
+}
+
 cusing System;
 using System.Collections.Generic;
 using System.ComponentModel;
