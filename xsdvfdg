@@ -1,3 +1,26 @@
+private void dataGridView1_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
+{
+    // Verifica se o estado da linha é selecionado
+    if (e.StateChanged == DataGridViewElementStates.Selected)
+    {
+        // Obtém a linha selecionada
+        DataGridViewRow selectedRow = e.Row;
+
+        // Itera sobre as células da linha selecionada
+        foreach (DataGridViewCell cell in selectedRow.Cells)
+        {
+            // Define a cor de fundo da célula
+            cell.Style.BackColor = Color.Yellow; // Ou qualquer outra cor que você deseja usar
+        }
+    }
+}
+
+public Form1()
+{
+    InitializeComponent();
+    dataGridView1.RowStateChanged += dataGridView1_RowStateChanged;
+}
+
 public Pjuridica()
 {
     InitializeComponent();
