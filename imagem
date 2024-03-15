@@ -1,61 +1,4 @@
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace WindowsFormsApp
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
-            InitializeComponent();
-        }
-
-        private void btnSaveImage_Click(object sender, EventArgs e)
-        {
-            // Exibe um diálogo de seleção de arquivo para o usuário escolher a imagem a ser salva
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Arquivos de imagem|*.png;*.jpg;*.jpeg;*.gif;*.bmp";
-            openFileDialog.Title = "Selecione uma imagem para salvar";
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                // Obtém o caminho do arquivo selecionado
-                string filePath = openFileDialog.FileName;
-
-                // Cria um objeto de imagem a partir do arquivo selecionado
-                Image image = Image.FromFile(filePath);
-
-                // Exibe um diálogo de salvamento de arquivo para o usuário escolher o local e o nome do arquivo para salvar a imagem
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "Arquivo PNG|*.png|Arquivo JPEG|*.jpg|Todos os arquivos|*.*";
-                saveFileDialog.Title = "Salvar imagem como...";
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    // Obtém o caminho do arquivo para salvar
-                    string savePath = saveFileDialog.FileName;
-
-                    // Salva a imagem no caminho especificado
-                    try
-                    {
-                        image.Save(savePath);
-                        MessageBox.Show("Imagem salva com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Erro ao salvar a imagem: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-    }
-}
-
-//COPIA
-
-
-
-
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -67,38 +10,39 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Data.SqlClient;
 
-namespace WindowsFormsApplication1
+
+namespace DevExProgramacaoLaura
 {
-    public partial class Pjuridica : Form
+    public partial class NaturalP : Form
     {
-        public int emailJ;
-        public int cnpJ;
+        //variaveis
+        public int emailF;
+        public int cpF;
         public string mensagem;
-        public string ValidateCnpj;
+        public string ValidateCpf;
         public string connetionString;
         public bool novo;
         public int code;
-        public string situacao;
+        public string condition;
 
-
-        public Pjuridica()
+        public NaturalP()
         {
             InitializeComponent();
-         }
- 
- 
-        SqlConnection conn = new SqlConnection(@"Data Source=CANCUN\SQLEXPRESS;Initial Catalog=exProgramacao;Persist Security Info=True;User ID=sa;Password=zx862");       
+        }
+        //conexao com o banco
+        SqlConnection conn = new SqlConnection(@"Data Source=CANCUN\SQLEXPRESS;Initial Catalog=exProgramacao;Persist Security Info=True;User ID=sa;Password=zx862");
+
         private void LoadData()
         {
             try
             {
                 conn.Open();
-                string query = "SELECT * FROM Pjuridica";
+                string query = "SELECT * FROM Pfisic";
                 SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 SDA.Fill(dt);
 
-                pjuridicaDataGridView.DataSource = dt;
+                pfisicDataGridView.DataSource = dt;
             }
             catch (Exception ex)
             {
@@ -109,35 +53,38 @@ namespace WindowsFormsApplication1
                 conn.Close();
             }
         }
+        //botao de salvar
         private void save_Click(object sender, EventArgs e)
         {
-            identify();
+            //verificação do email
+            string pattern = "^([0-9a-zA-Z]([-\\.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$";
 
-             situacao = "";
-            if (rbAtivoJ.Checked)
+            if (Regex.IsMatch(txtEmail.Text, pattern) == false)
             {
-                situacao = rbAtivoJ.Text;
-            }
-
-            if (rbInativoJ.Checked)
-            {
-                situacao = rbInativoJ.Text;
-            }
-
-            foreach (DataGridViewRow linha in pjuridicaDataGridView.Rows)
-            {
-                if (situacao == rbAtivoJ.Text)
+                if (txtEmail.Text.All(Char.IsWhiteSpace))
                 {
-                    linha.Cells[0].Style.BackColor = Color.LightSkyBlue;
-                }
-                else if (situacao == rbInativoJ.Text)
-                {
-                    linha.Cells[0].Style.BackColor = Color.IndianRed;
+                    emailF = 1;
+                    errorProvider7.Clear();
                 }
                 else
-                { }
+                {
+                    emailF = 0;
+                    errorProvider7.SetError(this.txtEmail, "Insira outro email");
+                    return;
+                }
+            }
+            //verificar o radioButton
+            if (rbAtivoF.Checked)
+            {
+                condition = rbAtivoF.Text;
             }
 
+            if (rbInativoF.Checked)
+            {
+                condition = rbInativoF.Text;
+            }
+
+            //caso não seja inserido nada no campo 'nome' vai retornar um aviso para inserir
             if (string.IsNullOrEmpty(txtName.Text.Trim()))
             {
                 errorProvider1.SetError(txtName, "Insira um nome");
@@ -148,6 +95,7 @@ namespace WindowsFormsApplication1
                 errorProvider1.SetError(txtName, string.Empty);
             }
 
+            //caso não seja inserido nada no campo 'endereço' vai retornar um aviso para inserir
             if (string.IsNullOrEmpty(txtAddres.Text.Trim()))
             {
                 errorProvider2.SetError(txtAddres, "Insira um endereço");
@@ -158,6 +106,7 @@ namespace WindowsFormsApplication1
                 errorProvider2.SetError(txtAddres, string.Empty);
             }
 
+            //caso não seja inserido nada no campo 'estado' vai retornar um aviso para inserir
             if (string.IsNullOrEmpty(cbState.Text.Trim()))
             {
                 errorProvider3.SetError(cbState, "Insira um estado");
@@ -168,6 +117,7 @@ namespace WindowsFormsApplication1
                 errorProvider3.SetError(cbState, string.Empty);
             }
 
+            //caso não seja inserido nada no campo 'cidade' vai retornar um aviso para inserir
             if (string.IsNullOrEmpty(txtCity.Text.Trim()))
             {
                 errorProvider4.SetError(txtCity, "Insira uma cidade");
@@ -176,17 +126,19 @@ namespace WindowsFormsApplication1
             else
             {
                 errorProvider4.SetError(txtCity, string.Empty);
-            }        
-            if (string.IsNullOrEmpty(mskCnpj.Text.Trim()))
+            }
+
+            //caso não seja inserido nada no campo 'cpf' vai retornar um aviso para inserir
+            if (string.IsNullOrEmpty(mskCpf.Text.Trim()))
             {
-                errorProvider5.SetError(mskCnpj, "Insira um cnpj");
-                return;
+                errorProvider5.SetError(mskCpf, "Insira um cpf");
             }
             else
             {
-                errorProvider5.SetError(mskCnpj, string.Empty);
+                errorProvider5.SetError(mskCpf, string.Empty);
             }
 
+            //caso não seja inserido nada no campo 'data' vai retornar um aviso para inserir
             if (string.IsNullOrEmpty(mskDate.Text.Trim()))
             {
                 errorProvider6.SetError(mskDate, "Insira uma data");
@@ -197,96 +149,71 @@ namespace WindowsFormsApplication1
                 errorProvider6.SetError(mskDate, string.Empty);
             }
 
-            string valor = mskCnpj.Text;
-            if (ValidateCNPJ.ValidadateCNPJ.IsCnpj(valor))
+            //chamar o validador do cpf
+            string valor = mskCpf.Text;
+            if (ValidateCPF.ValidadateCPF.IsCpf(valor))
             {
-                cnpJ = 1; errorProvider8.Clear();
+                cpF = 1;
+                errorProvider8.Clear();
             }
             else
             {
-                errorProvider8.SetError(mskCnpj, "Insira um cnpj valido");
+                errorProvider8.SetError(mskCpf, "Insira um cpf valido");
                 return;
             }
-
-            //destacS(); // Atualiza a cor de fundo das células do DataGridView
-
+            // conexao com o banco para o insert
             try
             {
                 conn.Open();
-                string query = "INSERT INTO Pjuridica(name, addres, street, city, streetNumber, cep, state, cnpj, ie, cellNumber, landline, email, date, observation, status) VALUES('" + txtName.Text + "','" + txtAddres.Text + "','" + txtStreet.Text + "','" + txtCity.Text + "','" + txtStreetNumber.Text + "','" + mskCep.Text + "','" + cbState.Text + "','" + mskCnpj.Text + "','" + mskIe.Text + "','" + mskCellNumber.Text + "','" + mskLandline.Text + "','" + txtEmail.Text + "','" + mskDate.Text + "','" + txtObservation.Text + "','"+situacao+"')";
+                string query = "INSERT INTO Pfisic(name, addres, street, city, streetNumber, cep, state, cpf, rg, cellNumber, landline, email, date, observation, status) VALUES('" + txtName.Text + "','" + txtAddres.Text + "','" + txtStreet.Text + "','" + txtCity.Text + "','" + txtStreetNumber.Text + "','" + mskCep.Text + "','" + cbState.Text + "','" + mskCpf.Text + "','" + mskRg.Text + "','" + mskCellNumber.Text + "','" + mskLandline.Text + "','" + txtEmail.Text + "','" + mskDate.Text + "','" + txtObservation.Text + "','" + condition + "')";
                 SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
                 SDA.SelectCommand.ExecuteNonQuery();
             }
             catch (Exception)
             {
                 MessageBox.Show("Error" + ex);
-            }               
-
+            }
             finally
             {
                 conn.Close();
             }
 
+            //botao de voltar fica verdadeiro
+            btnReturn.Enabled = true;
+
             MessageBox.Show(mensagem, "Registro incluído com sucesso!");
 
-            Pjuridica NewForm = new Pjuridica();
+            //novo from
+            NaturalP NewForm = new NaturalP();
             NewForm.Show();
             this.Dispose(false);
 
-            panel2.Enabled = false;       
+            //campos bloqueados
+            panel2.Enabled = false;
+            panel5.Enabled = false;
         }
 
-        public void identify()
+
+        //mascara do cpf
+        private void cpf_CheckedChanged(object sender, EventArgs e)
         {
-            string pattern = "^([0-9a-zA-Z]([-\\.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})$";
-
-            if (Regex.IsMatch(txtEmail.Text, pattern) == false)
-            {
-                if (txtEmail.Text.All(Char.IsWhiteSpace))
-                {
-                    emailJ = 1;
-                    errorProvider7.Clear();
-                }
-                else
-                {
-                    emailJ = 0;
-                    errorProvider7.SetError(this.txtEmail, "Insira outro email");
-                    return;
-                }
-            }
+            mskCpf.Text = "";
+            mskCpf.Mask = " ";
+            mskCpf.MaskInputRejected += new MaskInputRejectedEventHandler(cpf_MaskInputRejected);
         }
-      
 
-        private void cnpJ_CheckedChanged(object sender, EventArgs e)
-        {
-            mskCnpj.Text = "";
-            mskCnpj.Mask = "";
-            mskCnpj.MaskInputRejected += new MaskInputRejectedEventHandler(cnpj_MaskInputRejected);
-        }
-        private void cnpj_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
+        private void cpf_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         { }
 
-        private void clean_Click(object sender, EventArgs e)
+        //botao de limpar
+        private void btnClean_Click(object sender, EventArgs e)
         {
-            Pjuridica NewForm = new Pjuridica();
+            NaturalP NewForm = new NaturalP();
             NewForm.Show();
             this.Dispose(false);
         }
 
-        private void pjuridicaBindingNavigatorSaveItem_Click(object sender, EventArgs e)
-        {
-            this.Validate();
-            this.pjuridicaBindingSource.EndEdit();
-            this.tableAdapterManager.UpdateAll(this.exProgramacaoDataSet1);
-        }
-        private void Pjuridica_Load(object sender, EventArgs e)
-        {
-            // TODO: This line of code loads data into the 'exProgramacaoDataSet1.Pjuridica' table. You can move, or remove it, as needed.
-            this.pjuridicaTableAdapter2.Fill(this.exProgramacaoDataSet1.Pjuridica);
-            // TODO: This line of code loads data into the 'exProgramacaoDataSet21.Pjuridica' table. You can move, or remove it, as needed.
-            this.pjuridicaTableAdapter1.Fill(this.exProgramacaoDataSet.Pjuridica);
-              btnReturn.Enabled = true;
-        }
+        //botao de voltar
         private void btnReturn_Click(object sender, EventArgs e)
         {
             var Main = new Main();
@@ -297,13 +224,17 @@ namespace WindowsFormsApplication1
             get;
             set;
         }
+
+        //botao para inserir
         private void btnCreat_Click(object sender, EventArgs e)
         {
             panel2.Enabled = true;
             panel4.Enabled = true;
+            panel5.Enabled = true;
             btnReturn.Enabled = false;
-
         }
+
+        //conferir que vai ser apenas numeros no 'numero da rua'
         private void txtStreetNumber_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsDigit(e.KeyChar))
@@ -312,12 +243,15 @@ namespace WindowsFormsApplication1
                 MessageBox.Show("este campo aceita somente numero");
             }
         }
+
+        //botao de delete
         private void btnDelete_Click(object sender, EventArgs e)
         {
             try
             {
+                //conexao com o banco para deletar de acordo com o codigo
                 conn.Open();
-                string query = "DELETE Pjuridica WHERE Code = "+ txtCode.Text +" ";
+                string query = "DELETE Pfisic WHERE Code = " + txtCode.Text + " ";
                 SqlDataAdapter SDA = new SqlDataAdapter(query, conn);
                 SDA.SelectCommand.ExecuteNonQuery();
 
@@ -327,26 +261,34 @@ namespace WindowsFormsApplication1
             {
                 MessageBox.Show("Erro" + ex);
             }
-          finally
+            finally
             {
                 conn.Close();
             }
             LoadData();
 
-            Pjuridica NewForm = new Pjuridica();
+            //novo form
+            NaturalP NewForm = new NaturalP();
             NewForm.Show();
             this.Dispose(false);
         }
+        //botao de update
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            panel1.Enabled = true;
-            if (pjuridicaDataGridView.SelectedRows.Count >0)
+            //liberar o panel
+            panel2.Enabled = true;
+            panel4.Enabled = true;
+            panel5.Enabled = true;
+            btnReturn.Enabled = false;
+
+            //pegar informacoes do grid e conexao com o banco
+            if (pfisicDataGridView.SelectedRows.Count > 0)
             {
-                int rowIndex = pjuridicaDataGridView.SelectedRows[0].Index;
+                int rowIndex = pfisicDataGridView.SelectedRows[0].Index;
                 try
                 {
                     conn.Open();
-                    string query = "UPDATE Pjuridica SET  name = @Name, addres = @Addres, street = @Street, city = @City, streetNumber = @StreetNumber, cep = @Cep, state = @State, cnpj = @Cnpj, ie = @Ie, cellNumber = @CellNumber, landline  = @Landline , email = @Email, date = @Date, observation = @Observation, status = @status WHERE code = @Code";
+                    string query = "UPDATE Pfisic SET  name = @Name, addres = @Addres, street = @Street, city = @City, streetNumber = @StreetNumber, cep = @Cep, state = @State, cpf = @Cpf, rg = @Rg, cellNumber = @CellNumber, landline  = @Landline , email = @Email, date = @Date, observation = @Observation, status = @status WHERE code = @Code";
                     using (SqlCommand command = new SqlCommand(query, conn))
                     {
                         command.Parameters.AddWithValue("@Code", txtCode.Text);
@@ -357,20 +299,21 @@ namespace WindowsFormsApplication1
                         command.Parameters.AddWithValue("@StreetNumber", txtStreetNumber.Text);
                         command.Parameters.AddWithValue("@Cep", mskCep.Text);
                         command.Parameters.AddWithValue("@State", cbState.Text);
-                        command.Parameters.AddWithValue("@Cnpj", mskCnpj.Text);
-                        command.Parameters.AddWithValue("@Ie", mskIe.Text);
+                        command.Parameters.AddWithValue("@Cpf", mskCpf.Text);
+                        command.Parameters.AddWithValue("@Rg", mskRg.Text);
                         command.Parameters.AddWithValue("@CellNumber", mskCellNumber.Text);
                         command.Parameters.AddWithValue("@LandLine", mskLandline.Text);
                         command.Parameters.AddWithValue("@Email", txtEmail.Text);
                         command.Parameters.AddWithValue("@Date", mskDate.Text);
                         command.Parameters.AddWithValue("@Observation", txtObservation.Text);
-                        command.Parameters.AddWithValue("@status",situacao);
-                        command.ExecuteNonQuery();                      
+                        command.Parameters.AddWithValue("@status", condition);
+                        command.ExecuteNonQuery();
+
                         MessageBox.Show("Registro atualizado com sucesso!");
-                        Pjuridica NewForm = new Pjuridica();
+                        NaturalP NewForm = new NaturalP();
                         NewForm.Show();
                         this.Dispose(false);
-                    }               
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -380,40 +323,43 @@ namespace WindowsFormsApplication1
                 {
                     conn.Close();
                     LoadData(); // Recarregar dados 
-                 }
+                }
             }
             else
             { }
         }
-        private void pjuridicaDataGridView_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
 
+        //quando clicar no grid as informacoes vao para os campos
+        private void pfisicDataGridView_MouseClick(object sender, MouseEventArgs e)
+        {
             try
             {
-                if (pjuridicaDataGridView.SelectedRows.Count >= 0)
+                if (pfisicDataGridView.SelectedRows.Count >= 0)
                 {
-                    txtCode.Text = pjuridicaDataGridView.SelectedRows[0].Cells[0].Value.ToString();
-                    txtName.Text = pjuridicaDataGridView.SelectedRows[0].Cells[1].Value.ToString();
-                    txtAddres.Text = pjuridicaDataGridView.SelectedRows[0].Cells[2].Value.ToString();
-                    txtStreet.Text = pjuridicaDataGridView.SelectedRows[0].Cells[3].Value.ToString();
-                    txtCity.Text = pjuridicaDataGridView.SelectedRows[0].Cells[4].Value.ToString();
-                    txtStreetNumber.Text = pjuridicaDataGridView.SelectedRows[0].Cells[5].Value.ToString();
-                    mskCep.Text = pjuridicaDataGridView.SelectedRows[0].Cells[6].Value.ToString();
-                    cbState.Text = pjuridicaDataGridView.SelectedRows[0].Cells[7].Value.ToString();
-                    mskCnpj.Text = pjuridicaDataGridView.SelectedRows[0].Cells[8].Value.ToString();
-                    mskIe.Text = pjuridicaDataGridView.SelectedRows[0].Cells[9].Value.ToString();
-                    mskLandline.Text = pjuridicaDataGridView.SelectedRows[0].Cells[10].Value.ToString();
-                    mskCellNumber.Text = pjuridicaDataGridView.SelectedRows[0].Cells[11].Value.ToString();
-                    txtEmail.Text = pjuridicaDataGridView.SelectedRows[0].Cells[12].Value.ToString();
-                    mskDate.Text = pjuridicaDataGridView.SelectedRows[0].Cells[13].Value.ToString();
-                    txtObservation.Text = pjuridicaDataGridView.SelectedRows[0].Cells[14].Value.ToString();
-                     situacao = pjuridicaDataGridView.SelectedRows[0].Cells[16].Value.ToString();
+                    txtCode.Text = pfisicDataGridView.SelectedRows[0].Cells[0].Value.ToString();
+                    txtName.Text = pfisicDataGridView.SelectedRows[0].Cells[1].Value.ToString();
+                    txtAddres.Text = pfisicDataGridView.SelectedRows[0].Cells[2].Value.ToString();
+                    txtStreet.Text = pfisicDataGridView.SelectedRows[0].Cells[3].Value.ToString();
+                    txtCity.Text = pfisicDataGridView.SelectedRows[0].Cells[4].Value.ToString();
+                    txtStreetNumber.Text = pfisicDataGridView.SelectedRows[0].Cells[5].Value.ToString();
+                    mskCep.Text = pfisicDataGridView.SelectedRows[0].Cells[6].Value.ToString();
+                    cbState.Text = pfisicDataGridView.SelectedRows[0].Cells[7].Value.ToString();
+                    mskCpf.Text = pfisicDataGridView.SelectedRows[0].Cells[8].Value.ToString();
+                    mskRg.Text = pfisicDataGridView.SelectedRows[0].Cells[9].Value.ToString();
+                    mskLandline.Text = pfisicDataGridView.SelectedRows[0].Cells[10].Value.ToString();
+                    mskCellNumber.Text = pfisicDataGridView.SelectedRows[0].Cells[11].Value.ToString();
+                    txtEmail.Text = pfisicDataGridView.SelectedRows[0].Cells[12].Value.ToString();
+                    mskDate.Text = pfisicDataGridView.SelectedRows[0].Cells[13].Value.ToString();
+                    txtObservation.Text = pfisicDataGridView.SelectedRows[0].Cells[14].Value.ToString();
+                    condition = pfisicDataGridView.SelectedRows[0].Cells[15].Value.ToString();
                 }
-            }                          
+            }
             catch (Exception)
             { }
-         }
-        private void pjuridicaDataGridView_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
+        }
+
+        //colorir o grid de acordo com a condicao(ativo ou inativo)
+        private void pfisicDataGridView_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
             // Verifica se o estado da linha é selecionado
             if (e.StateChanged == DataGridViewElementStates.Selected)
@@ -424,21 +370,48 @@ namespace WindowsFormsApplication1
                 // Itera sobre as células da linha selecionada
                 foreach (DataGridViewCell cell in selectedRow.Cells)
                 {
-                    if (situacao == rbAtivoJ.Text)
+                    //Caso o cliente seja ativo a linha vai ficar azul
+                    if (condition == rbAtivoF.Text)
                     {
-                     cell.Style.BackColor = Color.LightSkyBlue;
-                        //cell.[0].Style.BackColor = Color.LightSkyBlue;
+                        cell.Style.BackColor = Color.LightSkyBlue;
                     }
-                    else if (situacao == rbInativoJ.Text)
+                    //Caso o cliente seja inativo a linha vai ficar vermelha
+                    else if (condition == rbInativoF.Text)
                     {
-                       cell.Style.BackColor = Color.IndianRed;
-                        //cell.[0].Style.BackColor = Color.IndianRed;
+                        cell.Style.BackColor = Color.IndianRed;
                     }
                     else
                     { }
                 }
             }
         }
- 
+
+
+        //botao de cancelar
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            panel2.Enabled = false;
+            panel4.Enabled = false;
+            panel5.Enabled = false;
+            btnReturn.Enabled = true;
+            NaturalP NewForm = new NaturalP();
+            NewForm.Show();
+            this.Dispose(false);
+        }
+
+        private void pfisicBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            this.Validate();
+            this.pfisicBindingSource.EndEdit();
+            this.tableAdapterManager.UpdateAll(this.exProgramacaoDataSet);
+
+        }
+
+        private void NaturalP_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'exProgramacaoDataSet.Pfisic' table. You can move, or remove it, as needed.
+            this.pfisicTableAdapter.Fill(this.exProgramacaoDataSet.Pfisic);
+
+        }
     }
 }
