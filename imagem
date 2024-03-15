@@ -1,3 +1,55 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace WindowsFormsApp
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            // Exibe um diálogo de seleção de arquivo para o usuário escolher a imagem a ser salva
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Arquivos de imagem|*.png;*.jpg;*.jpeg;*.gif;*.bmp";
+            openFileDialog.Title = "Selecione uma imagem para salvar";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Obtém o caminho do arquivo selecionado
+                string filePath = openFileDialog.FileName;
+
+                // Cria um objeto de imagem a partir do arquivo selecionado
+                Image image = Image.FromFile(filePath);
+
+                // Exibe um diálogo de salvamento de arquivo para o usuário escolher o local e o nome do arquivo para salvar a imagem
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Arquivo PNG|*.png|Arquivo JPEG|*.jpg|Todos os arquivos|*.*";
+                saveFileDialog.Title = "Salvar imagem como...";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Obtém o caminho do arquivo para salvar
+                    string savePath = saveFileDialog.FileName;
+
+                    // Salva a imagem no caminho especificado
+                    try
+                    {
+                        image.Save(savePath);
+                        MessageBox.Show("Imagem salva com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Erro ao salvar a imagem: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+    }
+}
+
 //COPIA
 
 
